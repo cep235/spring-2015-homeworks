@@ -6,6 +6,8 @@ import statsmodels.api as sm
 from sklearn.linear_model import LinearRegression
 from ast import literal_eval
 from matplotlib import cm
+import time
+from itertools import chain
 
 
 # ============================================================================== #
@@ -23,6 +25,9 @@ from matplotlib import cm
 '''''''''''''''''''''''''''''''''
 '      L O A D    D A T A       '
 '''''''''''''''''''''''''''''''''
+
+#Keep track of time
+start_time = time.time()
 
 #Open our saved pickle
 RESTAURANTS = pickle.load( open( "RESTAURANT_INFO.p", "rb" ) )
@@ -84,41 +89,8 @@ print "Ranking of Top 100 Restaurants by % Failure:"
 for xx in range (0,100):
 	print "%d. %s: %3.1f%% (%s)" % (xx+1, rest_names_sorted[xx], 100*perc_fail_sorted[xx],RESTAURANTS[rest_names_sorted[xx]]['LICSTATUS'])
 
+print("This script took %s seconds to run." % (time.time() - start_time))
 
-# ============== Get Yelp Data by Neighborhood ================ #
-print "\n"
-print " ================================="
-print "|     Neighborhood Statistics     |"
-print " ================================="
-
-avg_viol_lvl_lst = []
-avg_yelp_rating_lst = []
-avg_failed_ins_lst = []
-neighborhood_lst = []
-
-
-#Group by Neighborhood
-neighborhoods_gb = rest_info_df.groupby('Neighborhood')
-for neighborhood,df in neighborhoods_gb:
-
-	#Get average violation level, average Yelp rating, and percent health inspections failed
-	avg_viol_lvl = df['ViolLevel'].mean()
-	avg_yelp_rating = df['Yelp Rating'].mean()
-	perc_health_failed = (100*float(df['Fail'].sum()) / df['Total'].sum())
-
-	#Save those values to their respective lists
-	neighborhood_lst.extend([neighborhood])
-	avg_viol_lvl_lst.extend([avg_viol_lvl])
-	avg_yelp_rating_lst.extend([avg_yelp_rating])
-	avg_failed_ins_lst.extend([perc_health_failed])
-
-	#Print out results
-	print neighborhood
-	print "-----------------------"
-	print "Avg violation level: %1.2f" % avg_viol_lvl
-	print "Avg Yelp rating: %1.2f" % avg_yelp_rating
-	print "Avg %% Health Inspect. Failed: %2.1f%%" % perc_health_failed
-	print ""
 
 
 
@@ -129,21 +101,83 @@ for neighborhood,df in neighborhoods_gb:
 ORANGE = '#FF8800'
 BLUE = '#0095FF'
 GREEN = '#00FF44'
+PURPLE = '#9900CC'
 
 # ==================== Plot Neighborhood Statistics ===================== #
-g = plt.figure()
-ax = g.add_subplot(111)
-x = np.arange(len(neighborhood_lst))
-for i in range(0,len(x)):
-	ax.barh(x[i],avg_yelp_rating_lst[i],color=cm.jet(1.*i/len(x)),align="center")
-ax.set_xlabel('Average Yelp Rating')
-ax.set_title('Average Yelp Rating By Neighborhood')
-ax.set_ylim([0-0.5,len(x)-0.5])
+
+plt.figure()
+plt.hold = True
+viol_level_list = []
+yelp_rating_list = []
+neighborhood_lst = []
+percent_fail_lst = []
+
+#Group by Neighborhood
+neighborhoods_gb = rest_info_df.groupby('Neighborhood')
+for neighborhood,df in neighborhoods_gb:
+
+
+	if (neighborhood == 'Upper South Providence'):
+		neighborhood = 'S. Providence'
+
+	viol_level_list.append(df['ViolLevel'].as_matrix())
+	yelp_rating_list.append(df['Yelp Rating'].as_matrix())
+	percent_fail_lst.append(df['Fail Rate'].as_matrix())
+	neighborhood_lst.append(neighborhood)
+
+
+x = np.arange(len(neighborhood_lst))+1 #X values
+
+#Plot violation level
+viol_lvl_boxplot = plt.boxplot(viol_level_list,vert=0, patch_artist=True)
+
+count = 0
+for box in viol_lvl_boxplot['boxes']:
+	box.set(facecolor = cm.Pastel1(1.*count/len(x)))
+	count+=1
+
+plt.setp(viol_lvl_boxplot['fliers'], color='red', marker='+')
 plt.yticks(x,neighborhood_lst,fontsize=9)
+plt.title('Violation Level Data by Neighborhood')
+plt.xlabel('Violation Level')
+plt.show()
+
+#Plot Yelp rating
+yelp_rating_boxplot = plt.boxplot(yelp_rating_list,vert=0, patch_artist=True)
+
+count = 0
+for box in yelp_rating_boxplot['boxes']:
+	box.set(facecolor = cm.Pastel1(1.*count/len(x)))
+	count+=1
+
+plt.setp(yelp_rating_boxplot['fliers'], color='red', marker='+')
+plt.yticks(x,neighborhood_lst,fontsize=9)
+plt.title('Yelp Ratings Data by Neighborhood')
+plt.xlabel('Yelp Rating')
+plt.show()
+
+#Plot % fail
+perc_fail_boxplot = plt.boxplot(percent_fail_lst,vert=0, patch_artist=True)
+
+count = 0
+for box in perc_fail_boxplot['boxes']:
+	box.set(facecolor = cm.Pastel1(1.*count/len(x)))
+	count+=1
+
+plt.setp(perc_fail_boxplot['fliers'], color='red', marker='+')
+plt.yticks(x,neighborhood_lst,fontsize=9)
+plt.title('% Health Inspections Failed by Neighborhood')
+plt.xlabel('Percentage (%)')
 plt.show()
 
 
+
 # ========= Plot Yelp Results vs. % Health Inspections Failed =========== #
+
+x = np.arange(len(neighborhood_lst)) #X values
+overall_yelp_mean = np.mean(list(chain(*yelp_rating_list)))  #Get mean of all Yelp ratings
+overall_viol_lvl = np.mean(list(chain(*viol_level_list))) #Get mean violation level
+
 
 #Plot Yelp Rating vs. Percent failed
 X = yelp_rating.T
