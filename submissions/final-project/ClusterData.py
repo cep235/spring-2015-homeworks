@@ -171,7 +171,7 @@ rest_info_df['Fail Rate'] = perc_fail
 rest_info_df['Pass Rate'] = perc_pass
 
 #Choose X 
-X = rest_info_df[['ViolLevel','Fail Rate','Pass Rate']]
+X = rest_info_df[['ViolLevel','Yelp Rating']]
 X = X.as_matrix()
 #X = X[:,np.newaxis]
 
@@ -242,7 +242,7 @@ mapt.plot(x2,y2,'kD',markersize=5,ax=ax,alpha=0.4)
 mapt.plot(x3,y3,'cD',markersize=5,ax=ax,alpha=0.4)
 #mapt.plot(x4,y4,'mD',markersize=5,ax=ax,alpha=0.4)
 #mapt.plot(x5,y5,'yD',markersize=5,ax=ax,alpha=0.4)
-ax.set_title('Restaurant Clustering #1')
+ax.set_title('Restaurant Clustering #2')
 ax.legend(['Cluster 1','Cluster 2','Cluster 3']) #,'Cluster 4','Cluster 5'])
 
 plt.show()
