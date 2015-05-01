@@ -4,6 +4,8 @@ NOTE: I DID NOT WRITE THIS SCRIPT.
 This script was taken from here: https://github.com/Yelp/yelp-api/blob/master/v2/python/sample.py
 
 This script is the official Yelp API v2.0 code sample.
+
+Additionally, I have removed my consumer key, consumer secret, token, and token secret!!! You need these 4 tokens/keys to run this script.
 '''
 
 import argparse
