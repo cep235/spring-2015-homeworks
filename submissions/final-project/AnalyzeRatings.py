@@ -122,6 +122,7 @@ percent_fail_lst = []
 #For linear regression only
 R2_value_list = []
 R2_neighb_list = []
+num_values_list = []
 
 #Group by Neighborhood
 neighborhoods_gb = rest_info_df.groupby('Neighborhood')
@@ -145,6 +146,7 @@ for neighborhood,df in neighborhoods_gb:
 		R2 = '{0:.3f}'.format(result.rsquared)
 		R2_value_list.extend([float(R2)])
 		R2_neighb_list.extend([neighborhood])
+		num_values_list.extend([df.shape[0]])
 
 
 
@@ -193,6 +195,10 @@ plt.xlabel('Percentage (%)')
 plt.show()
 
 #Plot R2
+print ""
+print "Generating plot for R^2 values..."
+df_temp = pd.DataFrame(np.asarray([R2_neighb_list,R2_value_list,num_values_list]).T,columns=['Neighborhood','R^2 Value','Num Restaurants'])
+print df_temp.head(len(df_temp))
 x = np.arange(len(R2_neighb_list))+1
 plt.barh(x,R2_value_list,align="center")
 plt.yticks(x,R2_neighb_list,fontsize=9)
