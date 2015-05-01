@@ -1,11 +1,11 @@
 import Yelp
-import FoodInspect
 import time
 import pickle
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from itertools import chain
+import sys
 
 # ============================================================================= #
 #                                                                               #
@@ -143,6 +143,13 @@ def fixViolLevel(food_inspections):
 ''''''''''''''''''''''''''''''''''''
 ' O B T A I N   Y E L P   D A T A  '
 ''''''''''''''''''''''''''''''''''''
+
+#First check if we can scrape data from Yelp!
+try:
+	results = Yelp.search(name,address)
+except:
+	print "ERROR: Could not extract data from Yelp. Looks like Yelp was unable to authenticate you. Do you have the necessary authentication tokens and keys? Check Yelp.py for more information."
+	sys.exit()
 
 #Load data
 food_inspections = pd.read_csv('fixed_locations.csv', sep=',',low_memory=False)
@@ -313,4 +320,3 @@ for idx, row in food_inspections.iterrows():
 pickle.dump(RESTAURANTS, open( "RESTAURANT_INFO.p", "wb" ) )
 
 print("This script took %s seconds to run." % (time.time() - start_time))
-
