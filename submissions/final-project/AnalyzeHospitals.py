@@ -68,6 +68,44 @@ print "\nFound %d hospitals in the food inspections dataset." % hospital_count
 '  E X T R A C T    H O S P I T A L    D A T A '
 ''''''''''''''''''''''''''''''''''''''''''''''''
 
+#List of hospitals. Obtained from: http://en.wikipedia.org/wiki/List_of_hospitals_in_Massachusetts
+hospitals=[
+"Arbour",
+"Boston Medical Center",
+"Carney",
+"Faulkner",
+"Franciscan",
+"Kindred",
+"Hebrew Rehabilitation",
+"Jewish Memorial",
+"Lemuel Shattuck",
+"Lindemann",
+"Massachusetts Eye and Ear Infirmary",
+"Mass Eye and Ear Infirmary",
+"Massachusetts General Hospital",
+"Mattapan Community Health Center",
+"New England Baptist Hospital",
+"Solomon Mental",
+"St. Elizabeth",
+"St. Margaret",
+"Jude",
+"Shriner",
+"Spaulding",
+"Tuft",
+"VA Hospital",
+"Beth Israel",
+"Deaconness",
+"Boston Children",
+"Brigham and Women",
+"Dana-Farber",
+"Joslin Diabetes"
+"hosp"]
+
+#Convert hospitals to all lowercase
+for jj in range (0,len(hospitals)):
+	hospitals[jj] = hospitals[jj].lower()
+
+
 avg_violation = [] #Stores the average violation level for each restaurant
 perc_failed = [] #Stores the percentage of failed health inspections
 perc_passed = [] #Stores the percentage of passed health inspections
@@ -76,8 +114,16 @@ hosp_names = [] #List of hospital names
 
 for restaurant in RESTAURANTS:
 
-	#If the restaurant is a hospital...
-	if ('hosp' in restaurant):
+	#Check if it is a hospital
+	is_hospital = False
+	for hosp in hospitals:
+		if (hosp in restaurant):
+			is_hospital = True
+			break;
+
+
+
+	if (is_hospital):
 		total = float(RESTAURANTS[restaurant]['Total'])
 		num_passed = float(RESTAURANTS[restaurant]['Pass']) #number of passed inspections
 		num_failed = float(RESTAURANTS[restaurant]['Fail']) #number of failed inspections
@@ -133,11 +179,13 @@ for restaurant in RESTAURANTS:
 		PASS = num_passed / total
 		FAIL = num_failed / total
 
-		hosp_names.extend([restaurant])
-		avg_violation.extend([viol_level_avg])
-		perc_failed.extend([FAIL])
-		perc_passed.extend([PASS])
-		yelp_rating.extend([rating])
+		#Only save data points for hospitals which have a Yelp user rating
+		if (rating > 0):
+			hosp_names.extend([restaurant])
+			avg_violation.extend([viol_level_avg])
+			perc_failed.extend([FAIL])
+			perc_passed.extend([PASS])
+			yelp_rating.extend([rating])
 
 
 #Now get the overall averages

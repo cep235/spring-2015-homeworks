@@ -112,6 +112,10 @@ yelp_rating_list = []
 neighborhood_lst = []
 percent_fail_lst = []
 
+#For linear regression only
+R2_value_list = []
+R2_neighb_list = []
+
 #Group by Neighborhood
 neighborhoods_gb = rest_info_df.groupby('Neighborhood')
 for neighborhood,df in neighborhoods_gb:
@@ -124,6 +128,17 @@ for neighborhood,df in neighborhoods_gb:
 	yelp_rating_list.append(df['Yelp Rating'].as_matrix())
 	percent_fail_lst.append(df['Fail Rate'].as_matrix())
 	neighborhood_lst.append(neighborhood)
+
+	if (df.shape[0] > 7): #Perform linear regression
+		X = df['Yelp Rating'].as_matrix().T
+		X = sm.add_constant(X) #need to add a constant; otherwise, linear regression fails!
+		y = df['Fail Rate'].as_matrix()
+
+		result = sm.OLS(y,X).fit()
+		R2 = '{0:.3f}'.format(result.rsquared)
+		R2_value_list.extend([float(R2)])
+		R2_neighb_list.extend([neighborhood])
+
 
 
 x = np.arange(len(neighborhood_lst))+1 #X values
@@ -170,7 +185,13 @@ plt.title('% Health Inspections Failed by Neighborhood')
 plt.xlabel('Percentage (%)')
 plt.show()
 
-
+#Plot R2
+x = np.arange(len(R2_neighb_list))+1
+plt.barh(x,R2_value_list,align="center")
+plt.yticks(x,R2_neighb_list,fontsize=9)
+plt.title('$R^2$ Value by Neighborhood (for Neighborhoods with >7 Restaurants)')
+plt.xlabel('$R^2$ Value for Linear Regression on Yelp User Rating vs. % Health Inspections Failed')
+plt.show()
 
 # ========= Plot Yelp Results vs. % Health Inspections Failed =========== #
 
