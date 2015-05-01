@@ -81,16 +81,23 @@ ids = np.argsort(perc_fail)
 ids = ids[::-1]
 perc_fail_sorted = perc_fail[ids]
 rest_names_sorted = rest_names[ids]
+yelp_rating_sorted = yelp_rating[ids]
+avg_violation_sorted = avg_violation[ids]
 
 
 #Print rankings of restaurants
+print "Ranking of Top 15 Restaurants by % Failure:"
+df = pd.DataFrame(np.asarray([rest_names_sorted,100*perc_fail_sorted,yelp_rating_sorted,avg_violation_sorted]).T,columns=['Name','% Inspect. Failed','Yelp Rating','Avg. Violation Level'])
+print df.head(15)
+
+'''
 print ""
 print "Ranking of Top 100 Restaurants by % Failure:"
 for xx in range (0,100):
-	print "%d. %s: %3.1f%% (%s)" % (xx+1, rest_names_sorted[xx], 100*perc_fail_sorted[xx],RESTAURANTS[rest_names_sorted[xx]]['LICSTATUS'])
+	print "%d. %s: %3.1f%% / %1.1f / %1.2f / %s " % (xx+1, rest_names_sorted[xx], 100*perc_fail_sorted[xx], yelp_rating_sorted[xx], avg_violation_sorted[xx], RESTAURANTS[rest_names_sorted[xx]]['LICSTATUS'])
 
 print("This script took %s seconds to run." % (time.time() - start_time))
-
+'''
 
 
 

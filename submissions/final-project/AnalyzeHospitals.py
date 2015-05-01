@@ -94,11 +94,11 @@ hospitals=[
 "Tuft",
 "VA Hospital",
 "Beth Israel",
-"Deaconness",
+"Deaconess",
 "Boston Children",
 "Brigham and Women",
 "Dana-Farber",
-"Joslin Diabetes"
+"Joslin Diabetes",
 "hosp"]
 
 #Convert hospitals to all lowercase
