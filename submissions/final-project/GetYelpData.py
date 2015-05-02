@@ -146,7 +146,7 @@ def fixViolLevel(food_inspections):
 
 #First check if we can scrape data from Yelp!
 try:
-	results = Yelp.search(name,address)
+	results = Yelp.search('food','Boston MA')
 except:
 	print "ERROR: Could not extract data from Yelp. Looks like Yelp was unable to authenticate you. Do you have the necessary authentication tokens and keys? Check Yelp.py for more information."
 	sys.exit()
